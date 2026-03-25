@@ -1,0 +1,111 @@
+# financial-indicators
+
+Open-source Python library implementing 120+ fundamental analysis indicators for stock evaluation and screening.
+
+## Features
+
+- **28 Value indicators**: P/E, P/B, P/S, EV/EBITDA, Graham Number, DCF intrinsic value, margin of safety, and more
+- **41 Quality indicators**: ROE, ROIC, margins, cash flow quality, earnings consistency, and more
+- **16 Integrity indicators**: Piotroski F-Score, Altman Z-Score, Beneish M-Score, debt ratios, liquidity ratios
+- **15 Growth indicators**: Revenue/EPS/FCF growth rates (1Y, 3Y, 5Y CAGR), dividend growth
+- **20 Risk indicators**: Beta, volatility, max drawdown, capital intensity, payout ratio
+
+## Installation
+
+```bash
+pip install financial-indicators
+```
+
+## Quick Start
+
+```python
+from financial_indicators import piotroski, altman, beneish, graham, dcf
+
+# Piotroski F-Score (0-9)
+score = piotroski.f_score(
+    roa=0.08, roa_prev=0.06,
+    ocf=500_000_000, total_assets=5_000_000_000,
+    leverage=0.35, leverage_prev=0.40,
+    current_ratio=1.8, current_ratio_prev=1.5,
+    shares_outstanding=1_000_000, shares_outstanding_prev=1_000_000,
+    gross_margin=0.42, gross_margin_prev=0.38,
+    asset_turnover=0.65, asset_turnover_prev=0.60
+)
+print(f"Piotroski F-Score: {score}/9")
+# Output: Piotroski F-Score: 9/9
+
+# Altman Z-Score
+z = altman.z_score(
+    working_capital=200_000, total_assets=1_000_000,
+    retained_earnings=300_000, ebit=150_000,
+    market_cap=800_000, total_liabilities=400_000,
+    revenue=1_200_000
+)
+print(f"Altman Z-Score: {z:.2f}")
+# Z > 2.99: Safe zone
+# 1.81 < Z < 2.99: Grey zone
+# Z < 1.81: Distress zone
+
+# Beneish M-Score
+m = beneish.m_score(
+    dsri=1.03, gmi=0.98, aqi=1.01, sgi=1.15,
+    depi=0.95, sgai=1.02, tata=-0.03, lvgi=1.01
+)
+print(f"Beneish M-Score: {m:.2f}")
+# M > -1.78: Likely manipulator
+# M < -1.78: Unlikely manipulator
+
+# Graham Number
+gn = graham.graham_number(eps=5.00, bvps=30.00)
+print(f"Graham Number: ${gn:.2f}")
+# Output: Graham Number: $58.09
+
+# DCF Intrinsic Value
+value = dcf.dcf_value(
+    fcf=500_000_000, growth_rate=0.08,
+    terminal_growth=0.03, discount_rate=0.10,
+    years=10, shares_outstanding=100_000_000
+)
+print(f"DCF Intrinsic Value: ${value:.2f}/share")
+```
+
+## Indicators Reference
+
+### Value Pillar (28 indicators)
+
+| Indicator | Function | Description |
+|-----------|----------|-------------|
+| P/E TTM | `value.pe_ratio(price, eps)` | Price-to-earnings ratio |
+| Forward P/E | `value.forward_pe(price, fwd_eps)` | Forward price-to-earnings |
+| P/B | `value.pb_ratio(price, bvps)` | Price-to-book ratio |
+| P/S | `value.ps_ratio(price, revenue_ps)` | Price-to-sales ratio |
+| EV/EBITDA | `value.ev_ebitda(ev, ebitda)` | Enterprise value to EBITDA |
+| Graham Number | `graham.graham_number(eps, bvps)` | Max defensive investor price |
+| DCF Value | `dcf.dcf_value(...)` | Discounted cash flow intrinsic value |
+| Margin of Safety | `value.margin_of_safety(price, iv)` | Discount to intrinsic value |
+| Earnings Yield | `value.earnings_yield(eps, price)` | Inverse of P/E ratio |
+| FCF Yield | `value.fcf_yield(fcf_ps, price)` | Free cash flow yield |
+| Dividend Yield | `value.dividend_yield(dps, price)` | Annual dividend / price |
+
+### Integrity Pillar (16 indicators)
+
+| Indicator | Function | Score Range |
+|-----------|----------|-------------|
+| Piotroski F-Score | `piotroski.f_score(...)` | 0-9 (higher = stronger) |
+| Altman Z-Score | `altman.z_score(...)` | <1.81 distress, >2.99 safe |
+| Beneish M-Score | `beneish.m_score(...)` | >-1.78 = likely manipulation |
+
+## Academic References
+
+- Piotroski, J.D. (2000). "Value Investing: The Use of Historical Financial Statement Information to Separate Winners from Losers." *Journal of Accounting Research*, 38, 1-41.
+- Altman, E.I. (1968). "Financial Ratios, Discriminant Analysis and the Prediction of Corporate Bankruptcy." *Journal of Finance*, 23(4), 589-609.
+- Beneish, M.D. (1999). "The Detection of Earnings Manipulation." *Financial Analysts Journal*, 55(5), 24-36.
+- Graham, B. (1949). *The Intelligent Investor*. Harper & Brothers.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## About
+
+Built by [Javier Sanz](https://valuemarkers.com/about/javier-sanz), founder of [ValueMarkers](https://valuemarkers.com) - a glass-box stock analysis platform for value investors.
